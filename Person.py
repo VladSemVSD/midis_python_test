@@ -2,11 +2,14 @@ import datetime
 import base64
 
 """
-Abstract person class. Conatnis methods both Volunteer an Administrator should have.
+Abstract person class.
+It contains methods both Volunteer an Administrators should have.
 """
-#first_name=None, birth_year=None, email=None, mobile=None, adress=None, profile_picture=None
+
+
 class Person():
-    def __init__(self, last_name, first_name=None, birth_year=None, email=None, mobile=None, adress=None, profile_picture=None):
+    def __init__(self, last_name, first_name=None, birth_year=None,
+                 email=None, mobile=None, adress=None, profile_picture=None):
         self.last_name = last_name
         self.first_name = first_name
         self.birth_year = birth_year
@@ -17,26 +20,30 @@ class Person():
         self._created_at = datetime.datetime.now()
 
     @property
+    def created_at(self):
+        return self._created_at
+
+    @property
     def last_name(self):
         return self._last_name
 
     @last_name.setter
     def last_name(self, value):
-        if value == "":
-            print("Provide last name")
+        if value == '':
+            print('Provide last name')
         if not value.isalpha():
-            raise ValueError("Provide letters only")
+            raise ValueError('Provide letters only')
         self._last_name = value
 
     @property
     def first_name(self):
         return self._first_name
 
-    # Check if provided name has alphabetical symbols only
+    #  # Check if the provided name has alphabetical symbols only
     @first_name.setter
     def first_name(self, value):
         if value and not value.isalpha():
-            raise ValueError("Provide letters only")
+            raise ValueError('Provide letters only')
         self._first_name = value
 
     @property
@@ -59,16 +66,16 @@ class Person():
     # Check if email contains "@", appends "@gmail.com" if not
     @email.setter
     def email(self, value):
-        if value and "@" in value:
+        if value and '@' in value:
             self._email = value
         else:
-            self.email = value + "@gmail.com"
+            self.email = value + '@gmail.com'
 
     @property
     def mobile(self):
         return self._mobile
 
-    # Clears provided string from aplhabetical chars and returns numbers only
+    # Clears provided string from alphabetical chars and returns numbers only
     @mobile.setter
     def mobile(self, value):
         if value:
@@ -79,11 +86,12 @@ class Person():
     def profile_picture(self):
         return self._prifile_picture
 
-    # Takes image from provided path, encodes it to base64 and saves it in attribute
+    # Takes image from the provided path,
+    # encodes it to base64 and saves it in the attribute
     @profile_picture.setter
     def profile_picture(self, value):
         if value and value != '':
-                self._prifile_picture = self.encode_picture(value)
+            self._prifile_picture = self._encode_picture(value)
 
     # # Method that gets user input for class attributes
     # @classmethod
@@ -100,11 +108,11 @@ class Person():
 
     # Prints persons date as Name + Surname + Email
     def get_full_name(self):
-        print(self.first_name+self.last_name+self.email)
+        print(self.first_name + self.last_name + self.email)
 
     # Sets a profile_pcture attribute to base64 encoded image from provided path
     def add_profile_photo(self, path):
-        picture = self.encode_picture(path)
+        picture = self._encode_picture(path)
         pattern = '/9j/4'
         try:
             picture.startswith(pattern)
@@ -117,28 +125,35 @@ class Person():
         with open('foto.jpg', 'wb') as f:
             f.write(base64.decodebytes(self.profile_picture.encode('utf-8')))
 
-    def encode_picture(self, path):
-        with open(path, "rb") as img_file:
-                base64_enocded = base64.b64encode(
-                    img_file.read()).decode('utf-8')
-                return base64_enocded
+    # Method encodes picture to base 64
+    def _encode_picture(self, path):
+        with open(path, 'rb') as img_file:
+            base64_enocded = base64.b64encode(
+                img_file.read()).decode('utf-8')
+            return base64_enocded
 
-
+    # Outputs Person data to console. For testing.
     def print_data(self):
         print('Adress: ' + self.adress)
         print('First name: ' + self.first_name)
         print('Last name: ' + self.last_name)
         print('Birth year: ' + str(self.birth_year))
-        #print(self.profile_picture)
+        # print(self.profile_picture)
         print('Moble: ' + self.mobile)
-        print('Created: ' + str(self._created_at))
+        print('Created: ' + str(self.created_at))
         print('\n')
 
+
 """
-Volunteer class. Inherits from Person class. Has volunterr specific methods and __is_admin attribute set to False
+Volunteer class. 
+Inherits from Person class. 
+Has volunterr specific methods and _is_admin attribute set to False
 """
+
+
 class Volunteer(Person):
-    def __init__(self, last_name, first_name=None, birth_year=None, email=None, mobile=None, adress=None, profile_picture=None):
+    def __init__(self, last_name, first_name=None, birth_year=None,
+                 email=None, mobile=None, adress=None, profile_picture=None):
         self._is_admin = False
         # Some sample data for testing
         self.track_records = {
@@ -153,47 +168,46 @@ class Volunteer(Person):
             datetime.date(2013, 2, 6): {'type': 'glass', 'weight': 354.0, 'volume': 345.0, 'density': 1.02},
             datetime.date(2001, 5, 6): {'type': 'plastic', 'weight': 455.0, 'volume': 3445.0, 'density': 0.13},
         }
-        super().__init__(last_name, first_name, birth_year, email, mobile, adress, profile_picture)
+        super().__init__(last_name, first_name, birth_year,
+                         email, mobile, adress, profile_picture)
 
-    # Takes weight, volume, trash type and date to create an entry in track_record attribute
+    # Takes weight, volume, trash type, and date to create an entry in the track_record attribute
     def add_garbage_data(self):
         date = self.get_valid_date()
         collected_weight = float(input('Weight collected: '))
-        collected_volume = float(input("Volume: "))
+        collected_volume = float(input('Volume: '))
         trash_density = collected_weight / collected_volume
         trash_type = self.get_valid_trash_type()
 
         record = {
-            "type": trash_type,
+            'type': trash_type,
             'weight': collected_weight,
             'volume': collected_volume,
             'density': round(trash_density, 2)
         }
 
-        # Here I'm assuming you can only have on entry per day without the ability to edit entry
-        # Thus I'm using dict of dicts to store entries with dates as akeys for record dict
+        # Here I'm assuming you can only have one entry per day without the ability to edit the entry
+        # Thus I'm using dict of dicts to store entries with dates as akeys for the record dict
         self.track_records[date] = (record)
         print('\n')
 
-    # Asks use to provide date in console. Will continue until valid date provided
+    # Asks user to provide a date in the console. Will continue until the valid date provided
     def get_valid_date(self):
         date_format = '%Y-%m-%d'
         while True:
             date = input('Date (YYYY-MM-DD). Press "Enter" to set as today: ')
             if date == '':
                 return datetime.datetime.now().date()
-
             try:
                 date_valid = datetime.datetime.strptime(date, date_format)
             except ValueError:
                 print('Incorrect data format, should be YYYY-MM-DD')
-
             if date_valid.date() not in self.track_records:
                 return date_valid.date()
             else:
                 print('Entry already exists')
 
-    # Check if provided trash type is one of Glass, Plastic or Paper
+    # Check if provided trash type is one of Glass, Plastic, or Paper
     def get_valid_trash_type(self):
         trash_types = ['glass', 'paper', 'plastic']
         while True:
@@ -208,11 +222,11 @@ class Volunteer(Person):
     def get_garbage_data(self):
         volonteer_data = self.track_records
         for key, value in volonteer_data.items():
-            print(key, end=": ")
-            print(value['type'], end=" ")
-            print(value['weight'], end=" ")
-            print(value['volume'], end=" ")
-            print(value['density'], end=" ")
+            print(key, end=': ')
+            print(value['type'], end=' ')
+            print(value['weight'], end=' ')
+            print(value['volume'], end=' ')
+            print(value['density'], end=' ')
             print("\n")
 
     def get_stats(self, date_from, date_to, type, metric):
@@ -228,7 +242,9 @@ class Volunteer(Person):
         volunteer_data = self.track_records
         filtered_data = {
             k: v[metric] for (k, v) in volunteer_data.items() if k >= date_from_obj if k <= date_to_obj if v['type'] == type}
-        print(sum(filtered_data.values()))
+        qubick_meters = "m\u00b3"
+        print(
+            f'From {date_from_obj} to {date_to_obj} volnteer colected {sum(filtered_data.values())} of {type} in {"kg" if metric=="weight" else qubick_meters} ')
         print('\n')
 
     def get_all_time_stats(self):
@@ -257,24 +273,27 @@ class Volunteer(Person):
 
 
 """
-Administrator class. Inherits from Person class. Has __is_admin attribute set to True by default
+Administrator class. Inherits from Person class. Has _is_admin attribute set to True by default
 """
+
+
 class Administrator(Person):
     def __init__(self, last_name, **kwargs):
         self._is_admin = True
         super().__init__(last_name, **kwargs)
 
 
-
 """Volunteer specific methods example"""
 
-# Initialize volunterr instance. First argument last_nmae is required. All others are optional.
-vol_1 = Volunteer("Sem", first_name='Vlad', birth_year=1856, email='vsd', mobile='523dde434234', adress='tur 8 - 24', profile_picture='Smiley_Face.jpg')
+# Initialize volunteer instance. First argument last_nmae is required. All others are optional.
+vol_1 = Volunteer('Sem', first_name='Vlad', birth_year=1856, email='vsd',
+                  mobile='523dde434234', adress='tur 8 - 24', profile_picture='Smiley_Face.jpg')
 
 # Print person data (for testing)
-#vol_1.print_data()
+vol_1.print_data()
 
 # Add entry to person track records
+# User needs to provide date, weight, volume, and type in console
 vol_1.add_garbage_data()
 
 # Outputs volunteers data to console. 1 entry per line.
@@ -284,11 +303,12 @@ vol_1.get_garbage_data()
 vol_1.get_all_time_stats()
 
 # Takes two dates, trash type and metric as an arguments. Returns sum data fitered by them
-vol_1.get_stats('2000-03-11', '2100-09-12', 'glass', 'volume')
+vol_1.get_stats('2000-03-11', '2100-09-12', 'glass', 'weight')
 
 """Any user methods example"""
 
-adm_1 = Administrator("Deen", first_name='Vlad', email='vsd', mobile='523dde434234', profile_picture='Smiley_Face.jpg')
+adm_1 = Administrator('Deen', first_name='Vlad', email='vsd',
+                      mobile='523dde434234', profile_picture='Smiley_Face.jpg')
 print('Is admin for Administrator: ' + str(adm_1._is_admin))
 
 # Outputs full name to console as firstName+lastName+email
@@ -297,5 +317,5 @@ adm_1.get_full_name()
 # Sets objects profile_picture attribute to base64 encoded picture from path
 adm_1.add_profile_photo('Smiley_Face.jpg')
 
-# Convers base64 store in profile_picture directory to foto.jpg 
+# Convers base64 store in profile_picture directory to foto.jpg
 adm_1.write_photo_in_directory()
